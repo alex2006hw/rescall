@@ -27,6 +27,9 @@ const upload = multer({ dest: path.join(__dirname, 'uploads') });
  */
 dotenv.load({ path: '.env' });
 
+// satori satori-rtm-sdk
+const Satori = require('./controllers/satori');
+
 /**
  * Controllers (route handlers).
  */
@@ -34,6 +37,7 @@ const homeController = require('./controllers/home');
 const userController = require('./controllers/user');
 const apiController = require('./controllers/api');
 const contactController = require('./controllers/contact');
+const rescallController = require('./controllers/rescall');
 
 /**
  * API keys and Passport configuration.
@@ -99,21 +103,25 @@ app.use((req, res, next) => {
   res.locals.user = req.user;
   next();
 });
-app.use((req, res, next) => {
-  // After successful login, redirect back to the intended page
-  if (!req.user &&
-      req.path !== '/login' &&
-      req.path !== '/signup' &&
-      !req.path.match(/^\/auth/) &&
-      !req.path.match(/\./)) {
-    req.session.returnTo = req.path;
-  } else if (req.user &&
-      req.path === '/account') {
-    req.session.returnTo = req.path;
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   // After successful login, redirect back to the intended page
+//   if (!req.user &&
+//       req.path !== '/login' &&
+//       req.path !== '/signup' &&
+//       !req.path.match(/^\/auth/) &&
+//       !req.path.match(/\./)) {
+//     req.session.returnTo = req.path;
+//   } else if (req.user &&
+//       req.path === '/account') {
+//     req.session.returnTo = req.path;
+//   }
+//   next();
+// });
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
+/**
+ * Primary app routes.
+ */
+ app.get('/rescall', rescallController.index);
 
 /**
  * Primary app routes.
